@@ -100,3 +100,51 @@ async def find_all_dispatches(ctx: RunContextWrapper) -> str:
     return json.dumps(
         {"total_count": len(items), "dispatches": items}, ensure_ascii=False
     )
+
+
+@function_tool
+async def register_dispatch(
+    ctx: RunContextWrapper,
+    quantity: int,
+    invoice_no: Optional[str] = None,
+    ship_date: Optional[str] = None,
+    plant_code: Optional[str] = None,
+) -> str:
+    """
+    레미콘 출하 데이터를 시스템에 등록(저장)합니다.
+    플랜트 코드가 전달되지 않아도 'DEFAULT'로 자동 지정되어 안전하게 데이터가 저장됩니다.
+    송장번호나 출하일자가 명시되지 않아도 자동으로 생성/보정됩니다.
+
+    Args:
+        quantity: 출하 수량 (필수, 예: 50, 30 등)
+        invoice_no: (선택) 송장 번호 (생략 시 자동 생성)
+        ship_date: (선택) 출하 일자 (생략 시 오늘 일자)
+        plant_code: (선택) 플랜트 코드 (생략 시 'DEFAULT'로 자동 지정)
+    """
+    context: DispatchAgentContext = ctx.context
+    if context.command_service is None:
+        return json.dumps(
+            {"error": "출하 등록 서비스가 준비되지 않았습니다."}, ensure_ascii=False
+        )
+
+    dispatch = await context.command_service.create_dispatch(
+        quantity=quantity,
+        invoice_no=invoice_no,
+        ship_date=ship_date,
+        plant_code=plant_code,
+    )
+
+    return json.dumps(
+        {
+            "status": "success",
+            "message": "출하 데이터가 성공적으로 등록(저장)되었습니다.",
+            "dispatch": {
+                "id": str(dispatch.id_),
+                "invoice_no": dispatch.invoice_no,
+                "ship_date": dispatch.ship_date,
+                "plant_code": dispatch.plant_code,
+                "quantity": dispatch.quantity,
+            },
+        },
+        ensure_ascii=False,
+    )

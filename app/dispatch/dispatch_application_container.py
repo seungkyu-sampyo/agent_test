@@ -4,8 +4,10 @@ from app.thread.thread_core import ThreadCommandService
 from app.thread.thread_application_container import get_thread_command_service
 from .dispatch_core import (
     ReMiConDispatchQueryService,
+    ReMiConDispatchCommandService,
     DispatchAgentService,
     ReMiConDispatchRepository,
+    ReMiConDispatchUow,
     DispatchMessageRepository,
     DispatchMessageUow,
     DispatchMessageCommandService,
@@ -13,12 +15,14 @@ from .dispatch_core import (
 )
 from .dispatch_application import (
     ReMiConDispatchQueryServiceImpl,
+    ReMiConDispatchCommandServiceImpl,
     DispatchMessageCommandServiceImpl,
     DispatchMessageQueryServiceImpl,
     DispatchAgentServiceImpl,
 )
 from .dispatch_infra_container import (
     get_re_mi_con_dispatch_repository,
+    get_re_mi_con_dispatch_uow,
     get_dispatch_message_repository,
     get_dispatch_message_uow,
 )
@@ -30,6 +34,12 @@ def get_re_mi_con_dispatch_query_service(
     ),
 ) -> ReMiConDispatchQueryService:
     return ReMiConDispatchQueryServiceImpl(dispatch_repository=dispatch_repository)
+
+
+def get_re_mi_con_dispatch_command_service(
+    dispatch_uow: ReMiConDispatchUow = Depends(get_re_mi_con_dispatch_uow),
+) -> ReMiConDispatchCommandService:
+    return ReMiConDispatchCommandServiceImpl(dispatch_uow=dispatch_uow)
 
 
 def get_dispatch_message_command_service(
@@ -59,10 +69,14 @@ def get_dispatch_agent_service(
     thread_command_service: ThreadCommandService = Depends(
         get_thread_command_service
     ),
+    dispatch_command_service: ReMiConDispatchCommandService = Depends(
+        get_re_mi_con_dispatch_command_service
+    ),
 ) -> DispatchAgentService:
     return DispatchAgentServiceImpl(
         query_service=query_service,
         message_command_service=message_command_service,
         message_query_service=message_query_service,
         thread_command_service=thread_command_service,
+        dispatch_command_service=dispatch_command_service,
     )

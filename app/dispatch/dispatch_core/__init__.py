@@ -6,6 +6,9 @@ from .output.repository.dispatch_message_repository import DispatchMessageReposi
 from .output.uow.re_mi_con_dispatch_uow import ReMiConDispatchUow
 from .output.uow.dispatch_message_uow import DispatchMessageUow
 from .input.service.re_mi_con_dispatch_query_service import ReMiConDispatchQueryService
+from .input.service.re_mi_con_dispatch_command_service import (
+    ReMiConDispatchCommandService,
+)
 from .input.service.dispatch_message_command_service import (
     DispatchMessageCommandService,
 )
@@ -26,6 +29,7 @@ __all__ = [
     "ReMiConDispatchUow",
     "DispatchMessageUow",
     "ReMiConDispatchQueryService",
+    "ReMiConDispatchCommandService",
     "DispatchMessageCommandService",
     "DispatchMessageQueryService",
     "DispatchAgentService",

@@ -9,6 +9,7 @@ from app.dispatch.dispatch_core import (
     DispatchAgentService,
     DispatchChatResult,
     ReMiConDispatchQueryService,
+    ReMiConDispatchCommandService,
     DispatchMessageCommandService,
     DispatchMessageQueryService,
 )
@@ -30,6 +31,7 @@ class DispatchAgentServiceImpl(DispatchAgentService):
         message_command_service: DispatchMessageCommandService,
         message_query_service: DispatchMessageQueryService,
         thread_command_service: ThreadCommandService,
+        dispatch_command_service: Optional[ReMiConDispatchCommandService] = None,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         model: Optional[str] = None,
@@ -38,6 +40,7 @@ class DispatchAgentServiceImpl(DispatchAgentService):
         self._message_command_service = message_command_service
         self._message_query_service = message_query_service
         self._thread_command_service = thread_command_service
+        self._dispatch_command_service = dispatch_command_service
         self._agent = create_dispatch_agent(
             model=model,
             api_key=api_key,
@@ -74,8 +77,11 @@ class DispatchAgentServiceImpl(DispatchAgentService):
         ]
         conversation_input.append({"role": "user", "content": message})
 
-        # 5. Agent 실행 컨텍스트 주입
-        context = DispatchAgentContext(query_service=self._query_service)
+        # 5. Agent 실행 컨텍스트 주입 (조회 서비스 + 등록 커맨드 서비스)
+        context = DispatchAgentContext(
+            query_service=self._query_service,
+            command_service=self._dispatch_command_service,
+        )
 
         try:
             result = await Runner.run(
