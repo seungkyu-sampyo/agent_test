@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from app.thread.thread_core import Thread
 
@@ -6,7 +7,7 @@ from app.thread.thread_core import Thread
 class ThreadRepository(ABC):
 
     @abstractmethod
-    def find_by_id(self, _id: str): ...
+    async def find_by_id(self, thread_id: str) -> Optional[Thread]: ...
 
     @abstractmethod
-    def save(self, thread: Thread): ...
+    async def save(self, thread: Thread) -> Thread: ...

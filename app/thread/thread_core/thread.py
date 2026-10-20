@@ -1,10 +1,18 @@
-import uuid6
+from datetime import datetime
+
+from uuid6 import UUID, uuid7
+from dataclasses import dataclass
 
 
+@dataclass
 class Thread:
 
     def __init__(
         self,
-        _id: str | None = None,
+        id_: UUID | None = None,
+        created_at: datetime | None = None,
+        deleted_at: datetime | None = None,
     ):
-        self._id = id or uuid6.uuid7()
+        self.id_: UUID = id_ or uuid7()
+        self.created_at = created_at or datetime.now()
+        self.deleted_at = deleted_at or datetime.now()
