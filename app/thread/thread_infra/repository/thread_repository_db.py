@@ -18,7 +18,7 @@ class ThreadRepositoryDB(ThreadRepository):
 
     async def find_by_id(self, thread_id: UUID) -> Optional[Thread]:
         stmt = select(ThreadEntity).where(
-            ThreadEntity.id_ == thread_id, ThreadEntity.deleted_at.is_(None)
+            ThreadEntity.id_ == str(thread_id), ThreadEntity.deleted_at.is_(None)
         )
 
         result = await self._session.execute(stmt)

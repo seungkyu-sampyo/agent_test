@@ -15,4 +15,4 @@ class Thread:
     ):
         self.id_: UUID = id_ or uuid7()
         self.created_at = created_at or datetime.now()
-        self.deleted_at = deleted_at or datetime.now()
+        self.deleted_at: datetime | None = deleted_at
