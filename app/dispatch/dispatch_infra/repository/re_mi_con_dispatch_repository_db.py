@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import select
+from sqlalchemy import select, ScalarResult
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid6 import UUID
@@ -34,6 +34,22 @@ class ReMiConDispatchRepositoryDB(ReMiConDispatchRepository):
         return re_mi_con_mapper.to_domain(
             re_mi_con_dispatch_entity=re_mi_con_dispatch_entity
         )
+
+    async def find_by_plant_code(self, plant_code: str) -> list[ReMiConDispatch]:
+        stmt = select(ReMiConDispatchEntity).where(
+            ReMiConDispatchEntity.plant_code == plant_code
+        )
+
+        result = await self._session.execute(stmt)
+
+        re_mi_con_dispatch_entities: ScalarResult[ReMiConDispatchEntity] = (
+            result.scalars()
+        )
+
+        return [
+            re_mi_con_mapper.to_domain(re_mi_con_dispatch_entity)
+            for re_mi_con_dispatch_entity in re_mi_con_dispatch_entities
+        ]
 
     async def save(self, re_mi_con_dispatch: ReMiConDispatch) -> ReMiConDispatch:
 
