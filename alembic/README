@@ -2,7 +2,7 @@ Generic single-database configuration.
 
 auto update in project entities
 alembic revision --autogenerate -m "${message}"
-alembic revision --autogenerate -m "consulting"
+alembic revision --autogenerate -m "agent_test"
 
 update in project entities
 alembic revision -m "${message}"
