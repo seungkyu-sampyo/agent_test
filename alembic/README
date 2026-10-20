@@ -1,0 +1,11 @@
+Generic single-database configuration.
+
+auto update in project entities
+alembic revision --autogenerate -m "${message}"
+alembic revision --autogenerate -m "consulting"
+
+update in project entities
+alembic revision -m "${message}"
+
+migration entities to db
+alembic upgrade head
