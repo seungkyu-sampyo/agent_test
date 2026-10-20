@@ -1,0 +1,25 @@
+[project]
+name = "agent_test"
+version = "0.0.0"
+description = "Agent test project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.black]
+line-length = 88
+target-version = ['py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
