@@ -30,12 +30,19 @@ class DispatchAgentServiceImpl(DispatchAgentService):
         message_command_service: DispatchMessageCommandService,
         message_query_service: DispatchMessageQueryService,
         thread_command_service: ThreadCommandService,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
     ):
         self._query_service = query_service
         self._message_command_service = message_command_service
         self._message_query_service = message_query_service
         self._thread_command_service = thread_command_service
-        self._agent = create_dispatch_agent()
+        self._agent = create_dispatch_agent(
+            model=model,
+            api_key=api_key,
+            base_url=base_url,
+        )
 
     async def chat(
         self, message: str, thread_id: Optional[str] = None

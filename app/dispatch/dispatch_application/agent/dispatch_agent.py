@@ -1,5 +1,7 @@
 import os
-from agents import Agent
+from typing import Optional
+from openai import AsyncOpenAI
+from agents import Agent, OpenAIChatCompletionsModel
 
 from .dispatch_tools import (
     list_distinct_plants,
@@ -21,9 +23,32 @@ DISPATCH_AGENT_INSTRUCTIONS = """
 """
 
 
-def create_dispatch_agent(model: str | None = None) -> Agent:
-    """OpenAI Agents SDK Agent 인스턴스 생성"""
+def create_dispatch_agent(
+    model: Optional[str] = None,
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+) -> Agent:
+    """
+    OpenAI Agents SDK Agent 인스턴스 생성.
+    api_key 및 base_url을 직접 전달하거나, 환경 변수(OPENAI_API_KEY, OPENAI_BASE_URL)를 통해 설정할 수 있습니다.
+    """
     agent_model = model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    effective_api_key = api_key or os.getenv("OPENAI_API_KEY")
+    effective_base_url = base_url or os.getenv("OPENAI_BASE_URL")
+
+    # base_url 또는 api_key가 명시적으로 지정되어 있거나 커스텀 엔드포인트를 사용하는 경우
+    if effective_base_url or effective_api_key:
+        client = AsyncOpenAI(
+            api_key=effective_api_key or "EMPTY",
+            base_url=effective_base_url,
+        )
+        model_instance = OpenAIChatCompletionsModel(
+            model=agent_model,
+            openai_client=client,
+        )
+    else:
+        model_instance = agent_model
+
     return Agent(
         name="ReMiConDispatchAgent",
         instructions=DISPATCH_AGENT_INSTRUCTIONS.strip(),
@@ -33,5 +58,5 @@ def create_dispatch_agent(model: str | None = None) -> Agent:
             aggregate_dispatches_by_plant_code,
             find_all_dispatches,
         ],
-        model=agent_model,
+        model=model_instance,
     )
