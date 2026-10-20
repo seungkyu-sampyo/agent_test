@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.thread import thread_router
+from app.dispatch import dispatch_router
 
 app = FastAPI(
     title="Agent Test Server",
@@ -17,3 +18,4 @@ app.add_middleware(
 
 # 3. 도메인 라우터 등록
 app.include_router(thread_router)
+app.include_router(dispatch_router)
