@@ -10,17 +10,25 @@ load_dotenv()
 
 def database_url() -> str:
     """
-    환경 변수를 기반으로 비동기 MSSQL(aioodbc) 연결 URL 문자열을 생성합니다.
+    환경 변수를 기반으로 데이터베이스 연결 URL 문자열을 생성합니다.
+    DATABASE_URL 환경 변수가 설정되어 있으면 해당 값을 최우선으로 사용합니다.
 
     Returns:
         str: SQLAlchemy 데이터베이스 연결 DSN
-             (예: 'mssql+aioodbc://sa:pass%23word@10.50.20.71:1433/UNIHR_DB?driver=ODBC+Driver+17+for+SQL+Server').
     """
+    direct_url = os.getenv("DATABASE_URL")
+    if direct_url:
+        return direct_url
+
     db_engine: str = os.getenv("DB_ENGINE", "mssql+aioodbc")
+    if db_engine.startswith("sqlite"):
+        db_name = os.getenv("DB_NAME", "agent_test.db")
+        return f"{db_engine}:///{db_name}"
+
     db_host: str = os.getenv("DB_HOST", "localhost")
     db_port: str = os.getenv("DB_PORT", "1433")
-    db_name: str = os.getenv("DB_NAME")
-    db_user: str = os.getenv("DB_USER")
+    db_name: str = os.getenv("DB_NAME", "")
+    db_user: str = os.getenv("DB_USER", "")
 
     # 1. 비밀번호 내 특수문자(#, @ 등) 인코딩 처리
     db_password: str = quote_plus(os.getenv("DB_PASSWORD", ""))
